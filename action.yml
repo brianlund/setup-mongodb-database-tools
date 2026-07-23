@@ -1,0 +1,25 @@
+name: Setup MongoDB Database Tools
+description: Install MongoDB Database Tools and add mongodump, mongorestore, and related commands to PATH.
+author: Brian Lund
+
+inputs:
+  version:
+    description: Exact MongoDB Database Tools version to install, or "latest".
+    required: false
+    default: latest
+
+outputs:
+  version:
+    description: The exact MongoDB Database Tools version that was installed.
+  path:
+    description: The directory containing the installed Database Tools binaries.
+  cache-hit:
+    description: Whether the requested version was restored from the runner tool cache.
+
+runs:
+  using: node24
+  main: src/index.js
+
+branding:
+  icon: database
+  color: green

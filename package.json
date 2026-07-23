@@ -1,0 +1,19 @@
+{
+  "name": "setup-mongodb-database-tools",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "A GitHub Action for installing MongoDB Database Tools.",
+  "license": "MIT",
+  "author": "Brian Lund",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brianlund/setup-mongodb-database-tools.git"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "check": "node --check src/index.js && node --check src/install.js && node --check src/manifest.js && node --check src/platform.js",
+    "test": "node --test"
+  }
+}
