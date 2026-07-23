@@ -6,6 +6,9 @@ Install [MongoDB Database Tools](https://www.mongodb.com/docs/database-tools/)
 on a GitHub Actions runner. The action adds `mongodump`, `mongorestore`,
 `mongoexport`, `mongoimport`, and the other Database Tools commands to `PATH`.
 
+This community-maintained action is not affiliated with or endorsed by
+MongoDB, Inc.
+
 ## Usage
 
 ```yaml
@@ -111,9 +114,12 @@ machine.
 For security-sensitive workflows, pin third-party actions to a full commit SHA.
 Maintainers move major tags such as `v1` to deliver compatible fixes.
 
-## License
+## License and terms
 
-[MIT](LICENSE)
+Brian Lund licenses the action source code under the [MIT License](LICENSE).
+The [End User License Agreement](EULA.md) also governs your use of the action.
 
-This project is not affiliated with or endorsed by MongoDB, Inc. MongoDB is a
-registered trademark of MongoDB, Inc.
+This repository does not include MongoDB Database Tools. The action downloads
+them from MongoDB, and
+[MongoDB's terms](https://www.mongodb.com/legal/licensing/community-edition)
+govern their use. MongoDB is a registered trademark of MongoDB, Inc.
