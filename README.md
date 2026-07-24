@@ -26,8 +26,7 @@ steps:
     run: mongodump --uri="$MONGODB_URI" --archive=mongodb.archive --gzip
 ```
 
-Use an exact version for reproducible workflows. `latest` is also accepted and
-is the default:
+Pin an exact version for reproducible workflows. Set version to latest to install the latest release:
 
 ```yaml
 - uses: brianlund/setup-mongodb-database-tools@v1
@@ -69,16 +68,16 @@ Place the runner inside a VPC that can reach the DocumentDB cluster.
 
 ## Inputs
 
-| Input | Description | Default |
-| --- | --- | --- |
+| Input     | Description                               | Default  |
+| --------- | ----------------------------------------- | -------- |
 | `version` | Exact Database Tools version, or `latest` | `latest` |
 
 ## Outputs
 
-| Output | Description |
-| --- | --- |
-| `version` | Exact version installed |
-| `path` | Directory containing the installed binaries |
+| Output      | Description                                     |
+| ----------- | ----------------------------------------------- |
+| `version`   | Exact version installed                         |
+| `path`      | Directory containing the installed binaries     |
 | `cache-hit` | `true` when restored from the runner tool cache |
 
 ## Supported runners
@@ -107,12 +106,7 @@ The action performs these checks:
 4. Checks that `mongodump` reports the requested version.
 5. Stores the verified installation in the runner tool cache.
 
-The cache can be reused by later steps in the same job and by persistent
-self-hosted runners. GitHub-hosted runners start each job on a fresh virtual
-machine.
-
-For security-sensitive workflows, pin third-party actions to a full commit SHA.
-Maintainers move major tags such as `v1` to deliver compatible fixes.
+Later steps in the same job and persistent self-hosted runners can reuse the cache.
 
 ## License and terms
 
