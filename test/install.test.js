@@ -9,6 +9,7 @@ const path = require("node:path");
 const {
   cachePathFor,
   findToolDirectory,
+  runToolVersion,
   sha256,
   validateArchive,
   verifyChecksum,
@@ -91,4 +92,33 @@ test("finds the Database Tools binary directory", async (context) => {
   );
 
   assert.equal(await findToolDirectory(directory, linuxTarget), bin);
+});
+
+test("rejects tool executables that resolve outside the bin directory", async (context) => {
+  const directory = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), "mongodb-tools-test-"),
+  );
+  context.after(() => fs.promises.rm(directory, { recursive: true, force: true }));
+
+  const bin = path.join(directory, "bin");
+  const outsideMongodump = path.join(directory, "mongodump");
+  await fs.promises.mkdir(bin);
+  await fs.promises.writeFile(outsideMongodump, "", "utf8");
+  await Promise.all(
+    [
+      "bsondump",
+      "mongoexport",
+      "mongofiles",
+      "mongoimport",
+      "mongorestore",
+      "mongostat",
+      "mongotop",
+    ].map((name) => fs.promises.writeFile(path.join(bin, name), "", "utf8")),
+  );
+  await fs.promises.symlink(outsideMongodump, path.join(bin, "mongodump"));
+
+  await assert.rejects(
+    () => runToolVersion(bin, "100.17.0", linuxTarget),
+    /resolves outside its bin directory/,
+  );
 });

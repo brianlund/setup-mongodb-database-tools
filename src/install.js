@@ -41,27 +41,48 @@ function executableName(name, target) {
 }
 
 async function runToolVersion(binDirectory, version, target) {
-  const executables = TOOL_NAMES.map((name) =>
-    path.join(binDirectory, executableName(name, target)),
-  );
+  const canonicalBinDirectory = await fs.promises.realpath(binDirectory);
+  const executables = await Promise.all(
+    TOOL_NAMES.map(async (name) => {
+      const executable = await fs.promises.realpath(
+        path.join(canonicalBinDirectory, executableName(name, target)),
+      );
+      const relativePath = path.relative(canonicalBinDirectory, executable);
 
-  await Promise.all(
-    executables.map((executable) =>
-      fs.promises.access(executable, fs.constants.F_OK),
-    ),
+      if (
+        !relativePath ||
+        relativePath === ".." ||
+        relativePath.startsWith(`..${path.sep}`) ||
+        path.isAbsolute(relativePath)
+      ) {
+        throw new Error(
+          `MongoDB tool executable resolves outside its bin directory: ${name}.`,
+        );
+      }
+
+      const stat = await fs.promises.stat(executable);
+      if (!stat.isFile()) {
+        throw new Error(`MongoDB tool executable is not a file: ${name}.`);
+      }
+
+      return { name, path: executable, stat };
+    }),
   );
 
   if (target.platform !== "windows") {
     await Promise.all(
-      executables.map(async (file) => {
-        const stat = await fs.promises.stat(file);
-        await fs.promises.chmod(file, stat.mode | 0o111);
-      }),
+      executables.map((executable) =>
+        fs.promises.chmod(
+          executable.path,
+          executable.stat.mode | 0o111,
+        ),
+      ),
     );
   }
 
+  const mongodump = executables.find(({ name }) => name === "mongodump");
   const result = await execFileAsync(
-    path.join(binDirectory, executableName("mongodump", target)),
+    mongodump.path,
     ["--version"],
     {
       timeout: 30_000,
